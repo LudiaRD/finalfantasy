@@ -1,0 +1,115 @@
+#LOAD DATA
+```{r}
+dataset <- read.csv('dataset.csv', header = TRUE)
+```
+#ubah nama kolom
+```{r}
+colnames(dataset)[colnames(dataset) == "ï..date"] <- "date"
+```
+#melihat struktur dataset
+```{r}
+str(dataset)
+```
+#menampilkan banyak baris & kolom dataset
+```{r}
+dim(dataset)
+```
+#melihat 6 baris dataset pertama
+```{r}
+head(dataset)
+```
+#melihat 6 baris dataset terakhir
+```{r}
+tail(dataset)
+```
+#menampilkan statistika deskriptif dataset
+```{r}
+summary(dataset)
+```
+#PEMBAGIAN DATA
+```{r}
+train_size <- nrow(dataset)*0.7
+train <- dataset[0:train_size, ]
+test <- dataset[-(0:train_size),]
+#write.csv(train, "train.csv")
+#write.csv(test, "test.csv")
+```
+#NORMALISASI DATA
+```{r}
+library(BBmisc)
+normalize(train, method = "standardize", range = c(0, 1), margin = 1L, on.constant = "quiet")
+normalize(test, method = "standardize", range = c(0, 1), margin = 1L, on.constant = "quiet")
+#write.csv(normalize(train, method = "standardize", range = c(0, 1), margin = 1L, on.constant = "quiet"), "train_norm.csv")
+#write.csv(normalize(test, method = "standardize", range = c(0, 1), margin = 1L, on.constant = "quiet"), "test_norm.csv")
+```
+#FORECAST
+```{r}
+library(rnn)
+#run.rnn_demo()
+#run.finance_demo()
+
+train_gold <- read.csv('norm_gold.csv', header = TRUE)
+train_oil <- read.csv('norm_oil.csv', header = TRUE)
+
+#train_gold <- as.numeric(c(train_gold))
+#train_oil <- as.numeric(c(train_oil))
+
+#convert to array
+X1 = array(c(train_gold), dim = c(1,1))
+X2 = array(c(train_oil), dim = c(1,1))
+
+
+# function int2bin and bin2int
+int2bin <- function(integer, length=8) {t(sapply(integer, i2b, length=length))}
+
+i2b <- function(integer, length=8){rev(as.numeric(intToBits(integer))[1:length])}
+
+bin2int <- function(binary){
+# round
+  binary <- round(binary)
+# determine length of binary representation
+  length <- dim(binary)[2]
+# apply to full matrix
+  apply(binary, 1, b2i)}
+
+b2i <- function(binary)
+
+packBits(as.raw(rev(c(rep(0, 32-length(binary) ), binary))), 'integer')
+
+# convert to binary
+X1 <- int2bin(X1)
+X2 <- int2bin(X2)
+
+model <- trainr(X1, X2, learningrate = 0.9,
+       learningrate_decay = 1, momentum = 0, hidden_dim = 10, network_type = "rnn", numepochs = 100,
+       use_bias = F, batch_size = 1, seq_to_seq_unsync = F, update_rule = "sgd",
+       epoch_function = c(epoch_print, epoch_annealing), loss_function = loss_L1)
+
+plot(colMeans(model$error), type = 'l', xlab = 'epoch', ylab = 'errors')
+
+#predictr(model, trainr, hidden = FALSE, real_output = T)
+#plot(as.vector(train), col = 'blue', type = 'l', ylab = "Price", main = "Noisy waves")
+#lines(as.vector(Y), col = "red")
+```
+#MODEL1
+```{r}
+model <- trainr(X1, X2, learningrate = 9, learningrate_decay = 1, momentum = 0, hidden_dim = 10,
+       network_type = "rnn", numepochs = 100, use_bias = F, batch_size = 1, seq_to_seq_unsync = F,
+       update_rule = "sgd", epoch_function = c(epoch_print, epoch_annealing), loss_function = loss_L1)
+```
+#
+```{r}
+
+```
+#BANTUAN
+```{r}
+#help('trainr')
+#help('predictr')
+help(package='rnn')
+#vignette('rnn')
+#news(package='rnn')
+```
+#
+```{r}
+
+```
