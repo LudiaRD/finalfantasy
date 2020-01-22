@@ -1,0 +1,48 @@
+#LOAD DATA
+```{r}
+dataset <- read.csv('dataset.csv', header = TRUE)
+```
+#ubah nama kolom
+```{r}
+colnames(dataset)[colnames(dataset) == "Ã¯..date"] <- "date"
+```
+#melihat struktur dataset
+```{r}
+str(dataset)
+```
+#menampilkan banyak baris & kolom dataset
+```{r}
+dim(dataset)
+```
+#melihat 6 baris dataset pertama
+```{r}
+head(dataset)
+```
+#melihat 6 baris dataset terakhir
+```{r}
+tail(dataset)
+```
+#menampilkan statistika deskriptif dataset
+```{r}
+summary(dataset)
+```
+#PEMBAGIAN DATA
+```{r}
+train_size <- nrow(dataset)*0.7
+train <- dataset[0:train_size, ]
+test <- dataset[-(0:train_size),]
+#write.csv(train, "train.csv")
+#write.csv(test, "test.csv")
+```
+#NORMALISASI DATA
+```{r}
+library(BBmisc)
+normalize(train, method = "range", range = c(0, 1), margin = 1L, on.constant = "quiet")
+normalize(test, method = "range", range = c(0, 1), margin = 1L, on.constant = "quiet")
+#write.csv(normalize(train, method = "range", range = c(0, 1), margin = 1L, on.constant = "quiet"), "train_norm.csv")
+#write.csv(normalize(test, method = "range", range = c(0, 1), margin = 1L, on.constant = "quiet"), "test_norm.csv")
+```
+#VISUALISASI DATA
+```{r}
+
+```
