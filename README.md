@@ -5,15 +5,17 @@ Berikut keterangan isi dari setiap file :
 - dataset : date (tanggal pada hari kerja yang sudah disamakan 5 hari dalam seminggu dalam kurun waktu 1 Jan 2014 - 1 Jan 2019), gold (harga closing emas dunia sesuai dengan tanggal pada saat itu), oil (harga closing minyak WTI dunia sesuai dengan tanggal pada saat itu)
 - dataset1 : date (tanggal pada hari kerja yang sudah disamakan 5 hari dalam seminggu dalam kurun waktu 1 Jan 2015 - 1 Jan 2020), gold (harga closing emas dunia sesuai dengan tanggal pada saat itu), oil (harga closing minyak WTI dunia sesuai dengan tanggal pada saat itu)
 - dataset_norm : date (tanggal pada hari kerja yang sudah disamakan 5 hari dalam seminggu dalam kurun waktu 1 Jan 2014 - 1 Jan 2019), gold (harga closing emas dunia sesuai dengan tanggal pada saat itu), oil (harga closing minyak WTI dunia sesuai dengan tanggal pada saat itu)
+- train : Pembagian data 70% dari dataset (913 baris data)
+- test : Pembagian data 30% dari dataset (122 baris data)
+- train_gold : 
 - norm_gold : 
 - norm_gold1 : 
 - norm_oil : 
 - norm_oil1 : 
 - only_gold :
 - only_oil :
-- train :
-- test :
-- train_gold :
+
+
 - train_oil :
 - train_norm :
 - train_norm1 :
