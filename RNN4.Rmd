@@ -10,31 +10,21 @@ library(RSNNS)
 ```
 #LOAD DATA
 ```{r}
-dataset <- read.csv('dataset.csv', header = T)
-train_size <- nrow(dataset)*0.7
-train <- dataset[0:train_size, ]
-test <- dataset[-(0:train_size), ]
-colnames(train)[colnames(train) == "ï..date"] <- "date"
-colnames(test)[colnames(test) == "ï..date"] <- "date"
-
-#write.csv(train, "train.csv", row.names = F)
-#write.csv(test, "test.csv", row.names = F)
+train <- read.csv('train.csv', header = T)
+test <- read.csv('test.csv', header = T)
 ```
 #NORMALIZATION
 ```{r}
 train_norm <- normalizeData(train[2:3], type='0_1')
 test_norm <- normalizeData(test[2:3], type='0_1')
-
-#write.csv(train_uni, "train_norm.csv", row.names = F)
-#write.csv(test_uni, "test_norm.csv", row.names = F)
 ```
 #CONVERT TO MATRIX_UNIVARIATE
 ```{r}
-X <- as.matrix(train_norm[1:912, 1])
-Y <- as.matrix(train_norm[2:913, 1])
+X <- as.matrix(cbind(train_norm[1:909, 1], train_norm[2:910, 1], train_norm[3:911, 1], train_norm[4:912, 1]))
+Y <- as.matrix(train_norm[5:913, 1])
 
-X1 <- as.matrix(test_norm[1:391, 1])
-Y1 <- as.matrix(test_norm[2:392, 1])
+X1 <- as.matrix(cbind(test_norm[1:388, 1], test_norm[2:389, 1], test_norm[3:390, 1], test_norm[4:391, 1]))
+Y1 <- as.matrix(test_norm[5:392, 1])
 ```
 #MODEL_UNIVARIATE
 ```{r}
@@ -47,7 +37,7 @@ for (ii in 1:9) {
   i = ii/10
   for (jj in 1:9) {
     j = jj/10
-    for (k in 1:3) {
+    for (k in 4:12) {
       for (l in sigmoid) {
         for (m in rule) {
       #running time
@@ -72,7 +62,7 @@ for (ii in 1:9) {
           form = sprintf('output_%s-%s-%s-%s-%s.csv', i, j, k, l, m)
           mape_uni <- cbind(i, j, k, l, m, eror, time_taken)
           write.csv(predict_uni, file = form, row.names = F)
-          write.table(mape_uni, "mape-uni-1.csv", row.names = F, col.names = F, append = T, sep = ",")
+          write.table(mape_uni, "mape-uni-4.csv", row.names = F, col.names = F, append = T, sep = ",")
         }
       }
     }
@@ -81,11 +71,11 @@ for (ii in 1:9) {
 ```
 #CONVERT TO MATRIX_MULTIVARIATE   
 ```{r}
-X2 <- as.matrix(train_norm[1:912, c(1,2)])
-Y2 <- as.matrix(train_norm[2:913, 1])
+X2 <- as.matrix(cbind(train_norm[1:909, c(1,2)], train_norm[2:910, c(1,2)], train_norm[3:911, c(1,2)], train_norm[4:912, c(1,2)]))
+Y2 <- as.matrix(train_norm[5:913, 1])
 
-X3 <- as.matrix(test_norm[1:391, c(1,2)])
-Y3 <- as.matrix(test_norm[2:392, 1])
+X3 <- as.matrix(cbind(test_norm[1:388, c(1,2)], test_norm[2:389, c(1,2)], test_norm[3:390, c(1,2)], test_norm[4:391, c(1,2)]))
+Y3 <- as.matrix(test_norm[5:392, 1])
 ```
 #MODEL_MULTIVARIATE
 ```{r}
@@ -98,7 +88,7 @@ for (ii in 1:9) {
   i = ii/10
   for (jj in 1:9) {
     j = jj/10
-    for (k in 2:6) {
+    for (k in 8:24) {
       for (l in sigmoid) {
         for (m in rule) {
       #running time
@@ -123,7 +113,7 @@ for (ii in 1:9) {
           form = sprintf('output_%s-%s-%s-%s-%s.csv', i, j, k, l, m)
           mape_uni <- cbind(i, j, k, l, m, eror, time_taken)
           write.csv(predict_uni, file = form, row.names = F)
-          write.table(mape_uni, "mape-multi-1.csv", row.names = F, col.names = F, append = T, sep = ",")
+          write.table(mape_uni, "mape-multi-4.csv", row.names = F, col.names = F, append = T, sep = ",")
         }
       }
     }
