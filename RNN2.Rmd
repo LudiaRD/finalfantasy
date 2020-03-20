@@ -1,0 +1,124 @@
+#LIBRARY
+```{r}
+library(rnn)
+library(tidyr)
+library(Metrics)
+library(dplyr)
+library(ie2misc)
+library(BBmisc)
+library(RSNNS)
+```
+#LOAD DATA
+```{r}
+train <- read.csv('train.csv', header = T)
+test <- read.csv('test.csv', header = T)
+```
+#NORMALIZATION
+```{r}
+train_norm <- normalizeData(train[2:3], type='0_1')
+test_norm <- normalizeData(test[2:3], type='0_1')
+```
+#CONVERT TO MATRIX_UNIVARIATE
+```{r}
+#convert to array
+X <- as.matrix(cbind(train_norm[1:911, 1], train_norm[2:912, 1]))
+Y <- as.matrix(train_norm[3:913, 1])
+
+X1 <- as.matrix(cbind(test_norm[1:390, 1], test_norm[2:391, 1]))
+Y1 <- as.matrix(test_norm[3:392, 1])
+```
+#MODEL_UNIVARIATE
+```{r}
+#looping model
+sigmoid <- c("logistic", "Gompertz", "tanh")
+#sigmoid <- c("logistic")
+rule <- c("sgd", "adagrad")
+#rule <- c("sgd")
+for (ii in 1:9) {
+  i = ii/10
+  for (jj in 1:9) {
+    j = jj/10
+    for (k in 2:6) {
+      for (l in sigmoid) {
+        for (m in rule) {
+      #running time
+        start_time <- Sys.time()
+        #prime model
+          model <- trainr(Y, X, learningrate = i, momentum = j, hidden_dim = k, numepochs = 100, network_type = "rnn", sigmoid = l, use_bias = F, batch_size = 1, seq_to_seq_unsync = T, update_rule = m, epoch_function = c(epoch_print, epoch_annealing), loss_function = loss_L1)
+        #predicted values
+          result <- predictr(model, X1, hidden = F, real_output = T)
+        #denormalize result
+          denom_predict <- denormalizeData(result, getNormParameters(test_norm))
+          denom_actual <- denormalizeData(Y1, getNormParameters(test_norm))
+        end_time <- Sys.time()
+        time_taken <- end_time - start_time
+        #print(time_taken)
+        #MAPE
+          comparison_test <- as.vector(denom_actual)
+          output <- as.vector(denom_predict)
+          eror <- mape(comparison_test, output, na.rm = F)
+          #print(eror)
+        #export
+          predict_uni <- cbind(denom_actual, denom_predict)
+          form = sprintf('output_%s-%s-%s-%s-%s.csv', i, j, k, l, m)
+          mape_uni <- cbind(i, j, k, l, m, eror, time_taken)
+          write.csv(predict_uni, file = form, row.names = F)
+          write.table(mape_uni, "mape-uni-2.csv", row.names = F, col.names = F, append = T, sep = ",")
+        }
+      }
+    }
+  }
+}
+```
+#CONVERT TO MATRIX_MULTIVARIATE   
+```{r}
+#convert to array
+X2 <- as.matrix(cbind(train_norm[1:911, c(1,2)], train_norm[2:912, c(1,2)]))
+Y2 <- as.matrix(train_norm[3:913, 1])
+
+X3 <- as.matrix(cbind(test_norm[1:390, c(1,2)], test_norm[2:391, c(1,2)]))
+Y3 <- as.matrix(test_norm[3:392, 1])
+```
+#MODEL_MULTIVARIATE
+```{r}
+#looping model
+sigmoid <- c("logistic", "Gompertz", "tanh")
+#sigmoid <- c("logistic")
+rule <- c("sgd", "adagrad")
+#rule <- c("sgd")
+for (ii in 1:9) {
+  i = ii/10
+  for (jj in 1:9) {
+    j = jj/10
+    for (k in 4:12) {
+      for (l in sigmoid) {
+        for (m in rule) {
+      #running time
+        start_time <- Sys.time()
+        #prime model
+          model <- trainr(Y2, X2, learningrate = i, momentum = j, hidden_dim = k, numepochs = 100, network_type = "rnn", sigmoid = l, use_bias = F, batch_size = 1, seq_to_seq_unsync = T, update_rule = m, epoch_function = c(epoch_print, epoch_annealing), loss_function = loss_L1)
+        #predicted values
+          result <- predictr(model, X3, hidden = F, real_output = T)
+        #denormalize result
+          denom_predict <- denormalizeData(result, getNormParameters(test_norm))
+          denom_actual <- denormalizeData(Y3, getNormParameters(test_norm))
+        end_time <- Sys.time()
+        time_taken <- end_time - start_time
+        #print(time_taken)
+        #MAPE
+          comparison_test <- as.vector(denom_actual)
+          output <- as.vector(denom_predict)
+          eror <- mape(comparison_test, output, na.rm = F)
+          #print(eror)
+        #export
+          predict_uni <- cbind(denom_actual, denom_predict)
+          form = sprintf('output_%s-%s-%s-%s-%s.csv', i, j, k, l, m)
+          mape_uni <- cbind(i, j, k, l, m, eror, time_taken)
+          write.csv(predict_uni, file = form, row.names = F)
+          write.table(mape_uni, "mape-multi-2.csv", row.names = F, col.names = F, append = T, sep = ",")
+        }
+      }
+    }
+  }
+}
+```
